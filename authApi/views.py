@@ -33,7 +33,21 @@ class RegisterView(generics.GenericAPIView):
         serializer.save()
         user_data = serializer.data
         user = User.objects.get(email=user_data['email'])
-        token = RefreshToken.for_user(user).access_token
+
+        refresh = RefreshToken.for_user(user)
+        access_token = refresh.access_token
+
+        decodeJTW = jwt.decode(str(access_token), settings.SECRET_KEY, algorithms=["HS256"])
+
+        decodeJTW['name'] = user.username
+        decodeJTW['email'] = user.email
+        decodeJTW['id'] = user.id
+
+        #encode
+        access = jwt.encode(decodeJTW, settings.SECRET_KEY, algorithm="HS256")
+        token = access.decode('UTF-8')
+
+        #token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
         absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
@@ -63,3 +77,12 @@ class VerifyEmail(views.APIView):
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginAPIView(generics.GenericAPIView):
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

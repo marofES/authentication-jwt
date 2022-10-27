@@ -1,3 +1,4 @@
+from os import access
 from django.db import models
 
 from django.contrib.auth.models import (
@@ -5,7 +6,8 @@ from django.contrib.auth.models import (
 
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
-
+import jwt
+from django.conf import settings
 
 class UserManager(BaseUserManager):
 
@@ -55,9 +57,44 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-    def tokens(self):
+    def refresh_token(self):
         refresh = RefreshToken.for_user(self)
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token)
-        }
+        decodeJTW = jwt.decode(str(refresh), settings.SECRET_KEY, algorithms=["HS256"])
+
+        #decodeJTW['iat'] = '1590917498'
+        #decodeJTW['name'] = 'marof'
+        #decodeJTW['date'] = '2020-05-31'
+        decodeJTW['name'] = self.username
+        decodeJTW['email'] = self.email
+        decodeJTW['id'] = self.id
+        #token['password'] = user.password
+        #decodeJTW['role'] = self.role
+
+        #encode
+        refresh = jwt.encode(decodeJTW, settings.SECRET_KEY, algorithm="HS256")
+        refresh = refresh.decode('UTF-8')
+        # return {
+        #     'refresh': str(refresh),
+        #     'access': str(refresh.access_token)
+        # }
+        return str(refresh)
+
+    def access_token(self):
+        refresh = RefreshToken.for_user(self)
+        access_token = refresh.access_token
+
+        decodeJTW = jwt.decode(str(access_token), settings.SECRET_KEY, algorithms=["HS256"])
+
+        #decodeJTW['iat'] = '1590917498'
+        #decodeJTW['name'] = 'marof'
+        #decodeJTW['date'] = '2020-05-31'
+        decodeJTW['name'] = self.username
+        decodeJTW['email'] = self.email
+        decodeJTW['id'] = self.id
+        #token['password'] = user.password
+        #decodeJTW['role'] = self.role
+
+        #encode
+        access = jwt.encode(decodeJTW, settings.SECRET_KEY, algorithm="HS256")
+        access = access.decode('UTF-8')
+        return str(access)
