@@ -13,6 +13,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('authApi.urls')),
     path('expenses/', include('expenses.urls')),
+    path('income/', include('income.urls')),
     
     path('docs/', schema_view),
 

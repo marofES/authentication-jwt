@@ -45,8 +45,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     
-    'authApi',
     'expenses',
+    'income',
+    'authApi',
+    
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
 ]
@@ -117,8 +119,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=10),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=10),
 }
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
