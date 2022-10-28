@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     
     'authApi',
+    'expenses',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
 ]
@@ -96,7 +97,13 @@ DATABASES = {
 }
 
 SWAGGER_SETTINGS = {
-    'is_authenticated': True,
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
 }
 
 REST_FRAMEWORK = {

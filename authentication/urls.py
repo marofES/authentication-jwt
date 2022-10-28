@@ -12,6 +12,7 @@ schema_view = get_swagger_view(title='Auth API')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('authApi.urls')),
+    path('expenses/', include('expenses.urls')),
     
     path('docs/', schema_view),
 
